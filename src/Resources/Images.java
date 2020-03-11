@@ -29,6 +29,7 @@ public class Images {
 
     public static BufferedImage map1;
     public static BufferedImage ghost;
+    public static BufferedImage pacmanLogo;
     public static BufferedImage[] pacmanDots;
     public static BufferedImage[] pacmanRight;
     public static BufferedImage[] pacmanLeft;
@@ -45,7 +46,9 @@ public class Images {
 
     public static BufferedImage pacmanImageSheet;
     public SpriteSheet pacmanSpriteSheet;
-
+    
+    public static BufferedImage logoImageSheet;
+    public SpriteSheet logoSpriteSheet;
     public Images() {
 
         startGameButton = new BufferedImage[3];
@@ -53,7 +56,7 @@ public class Images {
         pauseToTitleButton = new BufferedImage[2];
         pauseOptionsButton = new BufferedImage[2];
         galagaLogo = new BufferedImage[3];
-        galagaPlayer = new BufferedImage[8];//not full yet, only has second to last image on sprite sheet
+        galagaPlayer = new BufferedImage[8];    //not full yet, only has second to last image on sprite sheet
         galagaPlayerDeath = new BufferedImage[8];
         galagaEnemyDeath = new BufferedImage[5];
         galagaEnemyBee = new BufferedImage[8];
@@ -130,9 +133,14 @@ public class Images {
             galagaPlayerLaser = galagaSpriteSheet.crop(365 ,219,3,8);
 
             pacmanImageSheet = ImageIO.read(getClass().getResourceAsStream("/UI/SpriteSheets/PacMan/Background.png"));
+            logoImageSheet = ImageIO.read(getClass().getResourceAsStream("/UI/SpriteSheets/PacMan/PacLogo.png"));
             pacmanSpriteSheet = new SpriteSheet(pacmanImageSheet);
+            logoSpriteSheet = new SpriteSheet(logoImageSheet);
             map1 = ImageIO.read(getClass().getResourceAsStream("/UI/Backgrounds/PacManMaps/map1.png"));
             ghost = pacmanSpriteSheet.crop(456,64,16,16);
+            
+            pacmanLogo = logoSpriteSheet.crop(50,348,2538,670);
+            		
             pacmanDots[0] = pacmanSpriteSheet.crop(643,18,16,16);
             pacmanDots[1] = pacmanSpriteSheet.crop(623,18,16,16);
 
