@@ -29,7 +29,7 @@ public class PacMan extends BaseDynamic{
 
     @Override
     public void tick(){
-
+    	
         switch (facing){
             case "Right":
                 x+=velX;

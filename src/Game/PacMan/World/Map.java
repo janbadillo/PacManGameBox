@@ -3,6 +3,7 @@ package Game.PacMan.World;
 import Game.PacMan.entities.Dynamics.BaseDynamic;
 import Game.PacMan.entities.Dynamics.PacMan;
 import Game.PacMan.entities.Statics.BaseStatic;
+import Game.PacMan.entities.Statics.BigDot;
 import Main.Handler;
 
 import java.awt.*;
@@ -36,12 +37,29 @@ public class Map {
         enemiesOnMap.add(entity);
 
     }
-
+    
+    float opacity = 1;
+    boolean increase = false;
     public void drawMap(Graphics2D g2) {
+    	
+    	if (increase) { // opacity for BigDot will loop increase and decrease 0.1 between 1 and 0
+			opacity += 0.05;
+			if (opacity >= 0.95)
+				increase = false;
+		} else {
+			opacity -= 0.05;
+			if (opacity <= 0.05)
+				increase = true;
+		}
+    	
         for (BaseStatic block:blocksOnMap) {
-
+        	if (block instanceof BigDot) {
+        		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+        		g2.drawImage(block.sprite, block.x, block.y, block.width, block.height, null);
+        		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+        	}else {
             g2.drawImage(block.sprite, block.x, block.y, block.width, block.height, null);
-
+        	}
         }
         for (BaseDynamic entity:enemiesOnMap) {
             if (entity instanceof PacMan) {
