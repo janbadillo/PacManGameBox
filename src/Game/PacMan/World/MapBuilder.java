@@ -37,8 +37,8 @@ public class MapBuilder {
 					mapInCreation.addEnemy(PacMan);
 					handler.setPacman((Game.PacMan.entities.Dynamics.PacMan) PacMan);
 				}else if(currentPixel == ghostC){
-					BaseDynamic ghost = new Ghost(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
-					mapInCreation.addEnemy(ghost);
+//					BaseDynamic ghost = new GhostSpawner(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
+//					mapInCreation.addEnemy(ghost);
 				}else if(currentPixel == dotC){
 					BaseStatic dot = new Dot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
 					mapInCreation.addBlock(dot);
@@ -62,7 +62,6 @@ public class MapBuilder {
 			 leftPixel = mapImage.getRGB(i - 1, j);
 		}else{
 			 leftPixel = pacman;
-
 		}
 		if (i<mapImage.getWidth()-1) {
 			 rightPixel = mapImage.getRGB(i + 1, j);
@@ -80,7 +79,6 @@ public class MapBuilder {
 			 downPixel = mapImage.getRGB(i, j + 1);
 		}else{
 			 downPixel = pacman;
-
 		}
 
 		if (currentPixel != leftPixel && currentPixel != upPixel && currentPixel != downPixel && currentPixel == rightPixel){
