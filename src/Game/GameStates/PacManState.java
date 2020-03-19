@@ -5,6 +5,7 @@ import Game.PacMan.World.MapBuilder;
 import Game.PacMan.entities.Dynamics.BaseDynamic;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BigDot;
+import Game.PacMan.entities.Statics.BlankSpace;
 import Game.PacMan.entities.Statics.Dot;
 import Main.Handler;
 import Resources.Images;
@@ -52,6 +53,8 @@ public class PacManState extends State {
                 }
                 for (BaseStatic removing: toREmove){
                     handler.getMap().getBlocksOnMap().remove(removing);
+                    BaseStatic bloku =  new BlankSpace(removing.x,removing.y,removing.width,removing.height,handler,removing.getCol(),removing.getRow());
+                    handler.getMap().getBlocksOnMap().add(bloku);
                 }
             }else{
                 startCooldown--;

@@ -30,6 +30,7 @@ public class Images {
     public static BufferedImage map1;
     public static BufferedImage ghost;
     public static BufferedImage pacmanLogo;
+    public static BufferedImage blankSpace;
     public static BufferedImage[] pacmanDots;
     public static BufferedImage[] pacmanRight;
     public static BufferedImage[] pacmanLeft;
@@ -140,7 +141,9 @@ public class Images {
             ghost = pacmanSpriteSheet.crop(456,64,16,16);
             
             pacmanLogo = logoSpriteSheet.crop(50,348,2538,670);
-            		
+            
+            blankSpace = pacmanSpriteSheet.crop(655,208,16,16);
+            
             pacmanDots[0] = pacmanSpriteSheet.crop(643,18,16,16);
             pacmanDots[1] = pacmanSpriteSheet.crop(623,18,16,16);
 

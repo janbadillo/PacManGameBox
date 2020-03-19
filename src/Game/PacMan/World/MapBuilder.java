@@ -5,6 +5,7 @@ import Game.PacMan.entities.Dynamics.Ghost;
 import Game.PacMan.entities.Dynamics.PacMan;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BigDot;
+import Game.PacMan.entities.Statics.BlankSpace;
 import Game.PacMan.entities.Statics.BoundBlock;
 import Game.PacMan.entities.Statics.Dot;
 import Main.Handler;
@@ -21,6 +22,7 @@ public class MapBuilder {
 	public static int ghostC = new Color(25, 255,0).getRGB();
 	public static int dotC = new Color(255, 10, 0).getRGB();
 	public static int bigDotC = new Color(167, 0, 150).getRGB();
+	public static int blank = new Color(255, 255, 255).getRGB();
 
 	public static Map createMap(BufferedImage mapImage, Handler handler){
 		Map mapInCreation = new Map(handler);
@@ -29,22 +31,28 @@ public class MapBuilder {
 				int currentPixel = mapImage.getRGB(i, j);
 				int xPos = i*pixelMultiplier;
 				int yPos = j*pixelMultiplier;
+				
 				if(currentPixel == boundBlock){
-					BaseStatic BoundBlock = new BoundBlock(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,getSprite(mapImage,i,j));
+					BaseStatic BoundBlock = new BoundBlock(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,getSprite(mapImage,i,j), i, j);
 					mapInCreation.addBlock(BoundBlock);
 				}else if(currentPixel == pacman){
-					BaseDynamic PacMan = new PacMan(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
+					BaseStatic blankSpace = new BlankSpace(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
+					mapInCreation.addBlock(blankSpace);
+					BaseDynamic PacMan = new PacMan(xPos,yPos,pixelMultiplier,pixelMultiplier,handler, i ,j);
 					mapInCreation.addEnemy(PacMan);
 					handler.setPacman((Game.PacMan.entities.Dynamics.PacMan) PacMan);
 				}else if(currentPixel == ghostC){
 //					BaseDynamic ghost = new GhostSpawner(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
 //					mapInCreation.addEnemy(ghost);
 				}else if(currentPixel == dotC){
-					BaseStatic dot = new Dot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
+					BaseStatic dot = new Dot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
 					mapInCreation.addBlock(dot);
 				}else if(currentPixel == bigDotC){
-					BaseStatic bigDot = new BigDot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
+					BaseStatic bigDot = new BigDot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
 					mapInCreation.addBlock(bigDot);
+				}else if(currentPixel == blank){
+					BaseStatic blankSpace = new BlankSpace(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
+					mapInCreation.addBlock(blankSpace);
 				}
 			}
 
