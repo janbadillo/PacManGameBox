@@ -3,6 +3,7 @@ package Main;
 import Display.DisplayScreen;
 import Game.GameStates.*;
 import Game.PacMan.World.Map;
+import Game.PacMan.entities.Dynamics.GhostSpawner;
 import Game.PacMan.entities.Dynamics.PacMan;
 import Input.KeyManager;
 import Input.MouseManager;
@@ -30,6 +31,7 @@ public class Handler {
     public static boolean DEBUG = true;
     private Map map;
     private PacMan pacman;
+    private GhostSpawner ghostSpawner;
 
     public Handler(GameSetUp game){
         this.game = game;
@@ -159,8 +161,13 @@ public class Handler {
     public PacMan getPacman() {
         return pacman;
     }
+    public GhostSpawner getGhostSpawner() {
+        return ghostSpawner;
+    }
 
     public void setPacman(PacMan pacman) {
         this.pacman = pacman;
     }
+
+
 }

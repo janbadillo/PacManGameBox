@@ -14,7 +14,7 @@ public class PacMan extends BaseDynamic{
 
     protected double speed = 2;
     public String facing = "Left", preTurn;
-    public boolean moving = true, turnFlag = false, turning = false, gamestart = true;
+    public boolean moving = true, turnFlag = false, turning = false, gamestart = true, dead = false;
     public Animation leftAnim,rightAnim,upAnim,downAnim;
     int turnCooldown = 20, turnDuration = 0;
     int row, col;
@@ -145,12 +145,6 @@ public class PacMan extends BaseDynamic{
         	preTurn = "Down";
         	turnReset();
         	}
-        }
-        if (handler.getKeyManager().keyJustPressed(KeyEvent.VK_Q) && !turnFlag){	
-            System.out.println(this.col);
-        	System.out.println(this.row);
-        	System.out.println(towardsBlock.getCol());
-        	System.out.println(towardsBlock.getRow());
         }
     }
     

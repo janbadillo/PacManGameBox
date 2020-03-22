@@ -2,6 +2,7 @@ package Game.PacMan.World;
 
 import Game.PacMan.entities.Dynamics.BaseDynamic;
 import Game.PacMan.entities.Dynamics.Ghost;
+import Game.PacMan.entities.Dynamics.GhostSpawner;
 import Game.PacMan.entities.Dynamics.PacMan;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BigDot;
@@ -38,12 +39,14 @@ public class MapBuilder {
 				}else if(currentPixel == pacman){
 					BaseStatic blankSpace = new BlankSpace(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
 					mapInCreation.addBlock(blankSpace);
-					BaseDynamic PacMan = new PacMan(xPos,yPos,pixelMultiplier,pixelMultiplier,handler, i ,j);
+					BaseDynamic PacMan = new PacMan(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
 					mapInCreation.addEnemy(PacMan);
 					handler.setPacman((Game.PacMan.entities.Dynamics.PacMan) PacMan);
 				}else if(currentPixel == ghostC){
-//					BaseDynamic ghost = new GhostSpawner(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
-//					mapInCreation.addEnemy(ghost);
+					BaseStatic blankSpace = new BlankSpace(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
+					mapInCreation.addBlock(blankSpace);
+					BaseDynamic ghostspawn = new GhostSpawner(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
+					mapInCreation.addEnemy(ghostspawn);
 				}else if(currentPixel == dotC){
 					BaseStatic dot = new Dot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
 					mapInCreation.addBlock(dot);

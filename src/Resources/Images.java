@@ -32,10 +32,35 @@ public class Images {
     public static BufferedImage pacmanLogo;
     public static BufferedImage blankSpace;
     public static BufferedImage[] pacmanDots;
+    
     public static BufferedImage[] pacmanRight;
     public static BufferedImage[] pacmanLeft;
     public static BufferedImage[] pacmanUp;
     public static BufferedImage[] pacmanDown;
+    
+    public static BufferedImage[] redRight;
+    public static BufferedImage[] redLeft;
+    public static BufferedImage[] redUp;
+    public static BufferedImage[] redDown;
+    
+    public static BufferedImage[] cyanRight;
+    public static BufferedImage[] cyanLeft;
+    public static BufferedImage[] cyanUp;
+    public static BufferedImage[] cyanDown;
+    
+    public static BufferedImage[] pinkRight;
+    public static BufferedImage[] pinkLeft;
+    public static BufferedImage[] pinkUp;
+    public static BufferedImage[] pinkDown;
+    
+    public static BufferedImage[] tanRight;
+    public static BufferedImage[] tanLeft;
+    public static BufferedImage[] tanUp;
+    public static BufferedImage[] tanDown;
+    
+    public static BufferedImage[] deadBlue;
+    public static BufferedImage[] deadWhite;
+ 
     public static BufferedImage[] bound;
     public static BufferedImage intro;
     public static BufferedImage start;
@@ -67,6 +92,25 @@ public class Images {
         pacmanLeft = new BufferedImage[2];
         pacmanUp = new BufferedImage[2];
         pacmanDown = new BufferedImage[2];
+        redRight = new BufferedImage[2];
+        redLeft = new BufferedImage[2];
+        redUp = new BufferedImage[2];
+        redDown = new BufferedImage[2];
+        cyanRight = new BufferedImage[2];
+        cyanLeft = new BufferedImage[2];
+        cyanUp = new BufferedImage[2];
+        cyanDown = new BufferedImage[2];
+        pinkRight = new BufferedImage[2];
+        pinkLeft = new BufferedImage[2];
+        pinkUp = new BufferedImage[2];
+        pinkDown = new BufferedImage[2];
+        tanRight = new BufferedImage[2];
+        tanLeft = new BufferedImage[2];
+        tanUp = new BufferedImage[2];
+        tanDown = new BufferedImage[2];
+        deadBlue = new BufferedImage[2];
+        deadWhite = new BufferedImage[4];
+        
         bound = new BufferedImage[16];
 
 
@@ -175,6 +219,50 @@ public class Images {
 
             pacmanDown[0] = pacmanSpriteSheet.crop(473,48,13,12);
             pacmanDown[1] = pacmanSpriteSheet.crop(489,1,13,13);
+            
+            redRight[0] = pacmanSpriteSheet.crop(457,65,13,13);
+            redRight[1] = pacmanSpriteSheet.crop(473,65,13,13);
+            redLeft[0] = pacmanSpriteSheet.crop(489,65,13,13);
+            redLeft[1] = pacmanSpriteSheet.crop(505,65,13,13);
+            redUp[0] = pacmanSpriteSheet.crop(521,65,13,13);
+            redUp[1] = pacmanSpriteSheet.crop(537,65,13,13);      
+            redDown[0] = pacmanSpriteSheet.crop(553,65,13,13);
+            redDown[1] = pacmanSpriteSheet.crop(569,65,13,13);
+            
+            cyanRight[0] = pacmanSpriteSheet.crop(457,97,13,13);
+            cyanRight[1] = pacmanSpriteSheet.crop(473,97,13,13);
+            cyanLeft[0] = pacmanSpriteSheet.crop(489,97,13,13);
+            cyanLeft[1] = pacmanSpriteSheet.crop(505,97,13,13);
+            cyanUp[0] = pacmanSpriteSheet.crop(521,97,13,13);
+            cyanUp[1] = pacmanSpriteSheet.crop(537,97,13,13);
+            cyanDown[0] = pacmanSpriteSheet.crop(553,97,13,13);
+            cyanDown[1] = pacmanSpriteSheet.crop(569,97,13,13);
+            
+            pinkRight[0] = pacmanSpriteSheet.crop(457,81,13,13);
+            pinkRight[1] = pacmanSpriteSheet.crop(473,81,13,13);
+            pinkLeft[0] = pacmanSpriteSheet.crop(489,81,13,13);
+            pinkLeft[1] = pacmanSpriteSheet.crop(505,81,13,13);
+            pinkUp[0] = pacmanSpriteSheet.crop(521,81,13,13);
+            pinkUp[1] = pacmanSpriteSheet.crop(537,81,13,13);
+            pinkDown[0] = pacmanSpriteSheet.crop(553,81,13,13);
+            pinkDown[1] = pacmanSpriteSheet.crop(569,81,13,13);
+            
+            tanRight[0] = pacmanSpriteSheet.crop(457,113,13,13);
+            tanRight[1] = pacmanSpriteSheet.crop(473,113,13,13);
+            tanLeft[0] = pacmanSpriteSheet.crop(489,113,13,13);
+            tanLeft[1] = pacmanSpriteSheet.crop(505,113,13,13);
+            tanUp[0] = pacmanSpriteSheet.crop(521,113,13,13);
+            tanUp[1] = pacmanSpriteSheet.crop(537,113,13,13);
+            tanDown[0] = pacmanSpriteSheet.crop(553,113,13,13);
+            tanDown[1] = pacmanSpriteSheet.crop(569,113,13,13);
+             
+            deadBlue[0] = pacmanSpriteSheet.crop(585,65,13,13);
+            deadBlue[1] = pacmanSpriteSheet.crop(601,65,13,13);
+            
+            deadWhite[0] = pacmanSpriteSheet.crop(617,65,13,13);
+            deadWhite[1] = pacmanSpriteSheet.crop(633,65,13,13);
+            deadWhite[2] = pacmanSpriteSheet.crop(585,65,13,13);
+            deadWhite[3] = pacmanSpriteSheet.crop(601,65,13,13);
 
             intro = ImageIO.read(getClass().getResourceAsStream("/UI/SpriteSheets/PacMan/intro.png"));
             start = ImageIO.read(getClass().getResourceAsStream("/UI/Backgrounds/startScreen.png"));

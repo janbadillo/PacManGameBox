@@ -1,6 +1,8 @@
 package Game.PacMan.World;
 
+import Game.GameStates.PacManState;
 import Game.PacMan.entities.Dynamics.BaseDynamic;
+import Game.PacMan.entities.Dynamics.Ghost;
 import Game.PacMan.entities.Dynamics.PacMan;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BigDot;
@@ -15,6 +17,7 @@ public class Map {
     ArrayList<BaseStatic> blocksOnMap;
     ArrayList<BaseDynamic> enemiesOnMap;
     Handler handler;
+    PacManState gamestate;
     private double bottomBorder;
     private Random rand;
     private int mapBackground;
@@ -77,6 +80,31 @@ public class Map {
                         g2.drawImage(((PacMan) entity).downAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
                         break;
                 }
+            } else if (entity instanceof Ghost) {
+            	if(((Ghost) entity).getVulnerability()) {
+            		if (((Ghost) entity).getVulnerableTime() <= 60*3) {
+            			g2.drawImage(((Ghost) entity).deadWhiteAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
+            		} else {
+            			g2.drawImage(((Ghost) entity).deadBlueAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
+            		}
+            		
+            	} else {
+            		
+	                switch (((Ghost) entity).facing) {
+		                case 1: // Right
+		                    g2.drawImage(((Ghost) entity).rightAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
+		                    break;
+		                case 3: // Left
+		                    g2.drawImage(((Ghost) entity).leftAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
+		                    break;
+		                case 0: // Up
+		                    g2.drawImage(((Ghost) entity).upAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
+		                    break;
+		                case 2: // Down
+		                    g2.drawImage(((Ghost) entity).downAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
+		                    break;
+	                }
+            	}
             }
             else {
                 g2.drawImage(entity.sprite, entity.x, entity.y, entity.width, entity.height, null);
