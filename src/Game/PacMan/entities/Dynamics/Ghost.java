@@ -66,6 +66,7 @@ public class Ghost extends BaseDynamic{
     		vulnerableTime--;
     	}
     	if (vulnerable) {
+    		speed = 1;
     		if (vulnerableTime <= 0) {
     			resetVulnerableTime();
     		}
@@ -75,6 +76,8 @@ public class Ghost extends BaseDynamic{
     			deadBlueAnim.tick();
     		}
     			
+    	}else {
+    		speed = 2;
     	}
         switch (facing){
             case 1: //Right

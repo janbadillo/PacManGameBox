@@ -43,8 +43,14 @@ public class PacManState extends State {
                 	if (entity instanceof Ghost) {
                 		if(vulnerable) {
                 			((Ghost) entity).setVulnerability(true);
+                			if(entity.getBounds().intersects(handler.getPacman().getBounds())) {
+                				// The ghost dies
+                			}
                 		} else {
                 			((Ghost) entity).setVulnerability(false);
+                			if(entity.getBounds().intersects(handler.getPacman().getBounds())) {
+                				// PacMan dies
+                			}
                 		}
                 	}
                 	if (entity instanceof GhostSpawner) {
