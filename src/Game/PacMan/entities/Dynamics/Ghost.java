@@ -1,6 +1,7 @@
 package Game.PacMan.entities.Dynamics;
 
 import Game.GameStates.PacManState;
+import Game.PacMan.World.MapBuilder;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BoundBlock;
 import Main.Handler;
@@ -18,15 +19,15 @@ public class Ghost extends BaseDynamic{
     public int facing = 3, chanceToTurn, vulnerableTime;//0 is Up, 1 is Right, 2 is Down, 3 is Left
     public boolean gamestart = true, vulnerable = false, dead = false;
     public Animation leftAnim,rightAnim,upAnim,downAnim,deadBlueAnim,deadWhiteAnim;
-    int turnCooldown = 20, turnDuration = 0;
-    int row, col;
-    BaseStatic towardsBlock;
+    int turnCooldown = 20, turnDuration = 0, deadCounter;
+    int posX, posY, towardsX, towardsY, spawnX, spawnY;
+    int pixelMultiplier = MapBuilder.pixelMultiplier;
     ArrayList<Integer> availableDirections = new ArrayList<>();
     Random random = new Random();
     PacManState gamestate;
 
 
-    public Ghost(int x, int y, int width, int height, Handler handler, int col, int row, int color) {
+    public Ghost(int x, int y, int width, int height, Handler handler, int color) {
         super(x, y, width, height, handler, Images.ghost);
         // for color: 0 is red, 1 is cyan, 2 is pink, 3 is tan
         deadBlueAnim = new Animation(128,Images.deadBlue);
@@ -52,24 +53,25 @@ public class Ghost extends BaseDynamic{
 	        upAnim = new Animation(128,Images.tanUp);
 	        downAnim = new Animation(128,Images.tanDown);
         }
-        this.row = row;
-        this.col = col;
+        spawnX = x;
+        spawnY = y;
+        posX = x;
+        posY = y;
     }
 
     @Override
     public void tick(){
     	if (gamestart) {
-    		setTowardsBlock(facing);
+    		setTowardsPosition(facing);
     		gamestart=false;
     	}
     	if(vulnerableTime >= 0) {
     		vulnerableTime--;
+    	} else if(vulnerableTime <= 0) {
+    		vulnerable = false;
     	}
     	if (vulnerable) {
     		speed = 1;
-    		if (vulnerableTime <= 0) {
-    			resetVulnerableTime();
-    		}
     		if(vulnerableTime <= 60*3) {
     			deadWhiteAnim.tick();
     		} else {
@@ -79,172 +81,196 @@ public class Ghost extends BaseDynamic{
     	}else {
     		speed = 2;
     	}
-        switch (facing){
-            case 1: //Right
-            	y = towardsBlock.y;
-            	if (this.x < towardsBlock.x) {
-	                x += speed;
-	                if (!vulnerable) {
-	                	rightAnim.tick();
-	                }
-            	} else {
-            		x = towardsBlock.x;
-            		setNewPosition();
-            		setAvailableTurns();
-            		int chanceToTurn = random.nextInt(4); // 1/4 chance of turning
-            		if (availableDirections.size() == 1) {
-            			facing = availableDirections.get(0);
-            		}else if (availableDirections.size() != 0 && chanceToTurn == 0) {
-            			int newFacing = random.nextInt(availableDirections.size());
-            			facing = availableDirections.get(newFacing);
-            		}
-            		setTowardsBlock(facing);
-            	}
-                break;
-            case 3: // Left
-            	y = towardsBlock.y;
-            	if (this.x > towardsBlock.x) {
-	                x-=speed;
-	                if (!vulnerable) {
-	                	leftAnim.tick();
-	                }
-            	} else {
-            		x = towardsBlock.x;
-            		setNewPosition();
-            		setAvailableTurns();
-            		int chanceToTurn = random.nextInt(4); // 1/4 chance of turning
-            		if (availableDirections.size() == 1) {
-            			facing = availableDirections.get(0);
-            		}else if (availableDirections.size() != 0 && chanceToTurn == 0) {
-            			int newFacing = random.nextInt(availableDirections.size());
-            			facing = availableDirections.get(newFacing);
-            		}
-            		setTowardsBlock(facing);
-            	}
-                break;
-            case 0: //Up
-            	x = towardsBlock.x;
-            	if (this.y > towardsBlock.y) {
-	                y-=speed;
-	                if (!vulnerable) {
-	                	upAnim.tick();
-	                }
-            	} else {
-            		y = towardsBlock.y;
-            		setNewPosition();
-            		setAvailableTurns();
-            		int chanceToTurn = random.nextInt(4); // 1/4 chance of turning
-            		if (availableDirections.size() == 1) {
-            			facing = availableDirections.get(0);
-            		}else if (availableDirections.size() != 0 && chanceToTurn == 0) {
-            			int newFacing = random.nextInt(availableDirections.size());
-            			facing = availableDirections.get(newFacing);
-            		}
-            		setTowardsBlock(facing);
-            	}
-                break;
-            case 2: //Down
-            	x = towardsBlock.x;
-            	if (this.y < towardsBlock.y) {
-	                y+=speed;
-	                if (!vulnerable) {
-	                	downAnim.tick();
-	                }
-            	} else {
-            		y = towardsBlock.y;
-            		setNewPosition();
-            		setAvailableTurns();
-            		int chanceToTurn = random.nextInt(4); // 1/4 chance of turning
-            		if (availableDirections.size() == 1) {
-            			facing = availableDirections.get(0);
-            		}else if (availableDirections.size() != 0 && chanceToTurn == 0) {
-            			int newFacing = random.nextInt(availableDirections.size());
-            			facing = availableDirections.get(newFacing);
-            		}
-            		setTowardsBlock(facing);
-            	}
-                break;
-        }
+    	if(ded) {
+            if ((spawnY + 8 < y || y < spawnY - 8) || (spawnX + 8 < x || x < spawnX - 8)) { // if not centered
+                if (y > spawnY) {
+                    y -= speed;
+                } else {
+                    y += speed;
+                }
+                if (x > spawnX) {
+                    x -= speed;
+                } else {
+                    x += speed;
+                }
+            } else {
+            	y = spawnY;
+            	x = spawnX;
+            	posY = y;
+            	posX = x;
+            	setTowardsPosition(facing);
+            	vulnerable = false;
+            	ded = false;
+            }
+
+    	}else {
+	        switch (facing){
+	            case 1: //Right
+	            	y = towardsY;
+	            	if (this.x < towardsX) {
+		                x += speed;
+		                if (!vulnerable) {
+		                	rightAnim.tick();
+		                }
+	            	} else {
+	            		x = towardsX;
+	            		setNewPosition();
+	            		setAvailableTurns();
+	            		int chanceToTurn = random.nextInt(3); // 1/3 chance of turning
+	            		if (availableDirections.size() == 1) {
+	            			facing = availableDirections.get(0);
+	            		}else if (availableDirections.size() != 0 && chanceToTurn == 0) {
+	            			int newFacing = random.nextInt(availableDirections.size());
+	            			facing = availableDirections.get(newFacing);
+	            		}
+	            		setTowardsPosition(facing);
+	            	}
+	                break;
+	            case 3: // Left
+	            	y = towardsY;
+	            	if (this.x > towardsX) {
+		                x-=speed;
+		                if (!vulnerable) {
+		                	leftAnim.tick();
+		                }
+	            	} else {
+	            		x = towardsX;
+	            		setNewPosition();
+	            		setAvailableTurns();
+	            		int chanceToTurn = random.nextInt(3); // 1/3 chance of turning
+	            		if (availableDirections.size() == 1) {
+	            			facing = availableDirections.get(0);
+	            		}else if (availableDirections.size() != 0 && chanceToTurn == 0) {
+	            			int newFacing = random.nextInt(availableDirections.size());
+	            			facing = availableDirections.get(newFacing);
+	            		}
+	            		setTowardsPosition(facing);
+	            	}
+	                break;
+	            case 0: //Up
+	            	x = towardsX;
+	            	if (this.y > towardsY) {
+		                y-=speed;
+		                if (!vulnerable) {
+		                	upAnim.tick();
+		                }
+	            	} else {
+	            		y = towardsY;
+	            		setNewPosition();
+	            		setAvailableTurns();
+	            		int chanceToTurn = random.nextInt(3); // 1/3 chance of turning
+	            		if (availableDirections.size() == 1) {
+	            			facing = availableDirections.get(0);
+	            		}else if (availableDirections.size() != 0 && chanceToTurn == 0) {
+	            			int newFacing = random.nextInt(availableDirections.size());
+	            			facing = availableDirections.get(newFacing);
+	            		}
+	            		setTowardsPosition(facing);
+	            	}
+	                break;
+	            case 2: //Down
+	            	x = towardsX;
+	            	if (this.y < towardsY) {
+		                y+=speed;
+		                if (!vulnerable) {
+		                	downAnim.tick();
+		                }
+	            	} else {
+	            		y = towardsY;
+	            		setNewPosition();
+	            		setAvailableTurns();
+	            		int chanceToTurn = random.nextInt(3); // 1/3 chance of turning
+	            		if (availableDirections.size() == 1) {
+	            			facing = availableDirections.get(0);
+	            		}else if (availableDirections.size() != 0 && chanceToTurn == 0) {
+	            			int newFacing = random.nextInt(availableDirections.size());
+	            			facing = availableDirections.get(newFacing);
+	            		}
+	            		setTowardsPosition(facing);
+	            	}
+	                break;
+	        }
+    	}
     }
+
+	  public void makeVulnerable() {
+		vulnerable = true;
+		vulnerableTime = 60*7;
+	  }
+	  
+	  public void die() {
+		    ded = true;
+		  }
     
-    public void resetVulnerableTime() {
-    	vulnerableTime = 60*7;
-    }
-    public int getVulnerableTime() {
-    	return vulnerableTime;
-    }
-    
-    public void setVulnerability(boolean a) {
-    	vulnerable = a;
-    }
-    public boolean getVulnerability() {
-    	return vulnerable;
-    }
     
     public void setAvailableTurns() {
     	availableDirections.clear();
+    	boolean addUp = true, addDown = true, addLeft = true, addRight = true;
     	for (BaseStatic bloku: handler.getMap().getBlocksOnMap()) {
-    		if (!(bloku instanceof BoundBlock)) {
-	    		if (bloku.getRow() == this.row && bloku.getCol() == this.col - 1 && facing != 1) {
-	    			availableDirections.add(3);
+    		if (bloku instanceof BoundBlock) {
+	    		if (bloku.y == posY && bloku.x == posX - pixelMultiplier) {
+	    			 addLeft = false;// Left
 	    		}
-	    		if (bloku.getRow() == this.row && bloku.getCol() == this.col + 1 && facing != 3) {
-	    			availableDirections.add(1);
+	    		if (bloku.y == posY && bloku.x == posX + pixelMultiplier) {
+	    			addRight = false;
 	    		}
-	    		if (bloku.getRow() == this.row - 1 && bloku.getCol() == this.col && facing != 2) {
-	    			availableDirections.add(0);
-	    		}
-	    		if (bloku.getRow() == this.row + 1 && bloku.getCol() == this.col && facing != 0) {
-	    			availableDirections.add(2);
-	    		}
+	    		if (bloku.y == posY - pixelMultiplier && bloku.x == posX) {
+	    			addUp = false;
+    			}
+	    		if (bloku.y == posY + pixelMultiplier && bloku.x == posX) {
+	    			addDown = false;
+    			}
     		}
+    	}
+    	if (addLeft && facing != 1) {
+    		availableDirections.add(3);
+    	}
+    	if (addRight && facing != 3) {
+    		availableDirections.add(1);
+    	}
+    	if (addUp && facing != 2) {
+    		availableDirections.add(0);
+    	}
+    	if (addDown && facing != 0) {
+    		availableDirections.add(2);
     	}
     }
     
-    public void setTowardsBlock(int direction) {
+    public void setTowardsPosition(int direction) {
+    	int testX = posX;
+    	int testY = posY;
+    	boolean testpass = true;
+    	switch (direction){
+	        case 1:
+	        	testX += pixelMultiplier;
+	            break;
+	        case 3:
+	        	testX -= pixelMultiplier;
+	            break;
+	        case 0:
+	        	testY -= pixelMultiplier;
+	            break;
+	        case 2:
+	        	testY += pixelMultiplier;
+	            break;
+    	}
+    	 
     	for (BaseStatic bloku: handler.getMap().getBlocksOnMap()) {
-	    	switch (direction){
-		        case 1: // Right
-	        		if (bloku.getRow() == this.row && bloku.getCol() == this.col + 1 && !(bloku instanceof BoundBlock)) {
-	        			towardsBlock = bloku;
-	        		}
-		            break;
-		        case 3: // Left
-		        	if (bloku.getRow() == this.row && bloku.getCol() == this.col - 1 && !(bloku instanceof BoundBlock)) {
-	        			towardsBlock = bloku;
-	        		}
-		            break;
-		        case 0: // Up
-		        	if (bloku.getRow() == this.row - 1 && bloku.getCol() == this.col && !(bloku instanceof BoundBlock)) {
-	        			towardsBlock = bloku;
-	        		}
-		            break;
-		        case 2: // Down
-		        	if (bloku.getRow() == this.row + 1 && bloku.getCol() == this.col && !(bloku instanceof BoundBlock)) {
-	        			towardsBlock = bloku;
-	        		}
-		            break;
+    		if (bloku instanceof BoundBlock) {
+		    	if (testX == bloku.getX() && testY == bloku.getY()) {
+		    		testpass = false;
+		    	}
     		}
+    	}
+    	if (testpass) {
+    		towardsX = testX;
+    		towardsY = testY;
     	}
     }
     
     public void setNewPosition() {
-    	this.row = towardsBlock.getRow();
-    	this.col = towardsBlock.getCol();
+    	posX = towardsX;
+    	posY = towardsY;
     }
-
-    public int getRow() {
-        return row;
-    }
-    public int getCol() {
-        return col;
-    }
-    public void setRow(int row) {
-        this.row = row;
-    }
-    public void setCol(int col) {
-        this.col = col;
-    }
-
 
 }

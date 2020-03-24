@@ -5,6 +5,7 @@ import Game.PacMan.World.MapBuilder;
 import Game.PacMan.entities.Dynamics.BaseDynamic;
 import Game.PacMan.entities.Dynamics.Ghost;
 import Game.PacMan.entities.Dynamics.GhostSpawner;
+import Game.PacMan.entities.Dynamics.PacMan;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BigDot;
 import Game.PacMan.entities.Statics.BlankSpace;
@@ -33,23 +34,22 @@ public class PacManState extends State {
     @Override
     public void tick() {
         if (Mode.equals("Stage")){
-        	if(vulnerableTime > 0) {
-        		vulnerableTime--;
-        	} else if (vulnerableTime <= 0) {
-        		vulnerable = false;
-        	}
+        	
             if (startCooldown<=0) {
                 for (BaseDynamic entity : handler.getMap().getEnemiesOnMap()) {
                 	if (entity instanceof Ghost) {
-                		if(vulnerable) {
-                			((Ghost) entity).setVulnerability(true);
+                		if (vulnerable) {
+                			((Ghost) entity).makeVulnerable();
+                		}
+                		if(((Ghost) entity).vulnerable) {
                 			if(entity.getBounds().intersects(handler.getPacman().getBounds())) {
-                				// The ghost dies
-                			}
+                				((Ghost) entity).die();
+                			}	
                 		} else {
-                			((Ghost) entity).setVulnerability(false);
                 			if(entity.getBounds().intersects(handler.getPacman().getBounds())) {
-                				// PacMan dies
+                				if(!entity.ded && !handler.getPacman().ded && !handler.getPacman().invinsible) {
+                					handler.getPacman().die();
+                				}
                 			}
                 		}
                 	}
@@ -60,8 +60,13 @@ public class PacManState extends State {
                 			newGhost = ((GhostSpawner) entity).getNewGhost();
                 		}
                 	}
-                    entity.tick();
+                	if (handler.getPacman().ded && entity instanceof PacMan) {
+                		handler.getPacman().tick();
+                	} else if (!handler.getPacman().ded){
+                		entity.tick();
+                	}
                 }
+                vulnerable = false;
                 
                 if (spawn) {
                 	handler.getMap().getEnemiesOnMap().add(newGhost);
@@ -77,7 +82,6 @@ public class PacManState extends State {
                         }
                     }else if (blocks instanceof BigDot){
                         if (blocks.getBounds().intersects(handler.getPacman().getBounds())){
-                        	vulnerableTime = 60*7;
                         	vulnerable = true;
                             handler.getMusicHandler().playEffect("pacman_chomp.wav");
                             toREmove.add(blocks);
@@ -88,8 +92,6 @@ public class PacManState extends State {
                 }
                 for (BaseStatic removing: toREmove){
                     handler.getMap().getBlocksOnMap().remove(removing);
-                    BaseStatic bloku =  new BlankSpace(removing.x,removing.y,removing.width,removing.height,handler,removing.getCol(),removing.getRow());
-                    handler.getMap().getBlocksOnMap().add(bloku);
                 }
             }else{
                 startCooldown--;

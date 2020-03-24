@@ -23,7 +23,6 @@ public class MapBuilder {
 	public static int ghostC = new Color(25, 255,0).getRGB();
 	public static int dotC = new Color(255, 10, 0).getRGB();
 	public static int bigDotC = new Color(167, 0, 150).getRGB();
-	public static int blank = new Color(255, 255, 255).getRGB();
 
 	public static Map createMap(BufferedImage mapImage, Handler handler){
 		Map mapInCreation = new Map(handler);
@@ -34,28 +33,21 @@ public class MapBuilder {
 				int yPos = j*pixelMultiplier;
 				
 				if(currentPixel == boundBlock){
-					BaseStatic BoundBlock = new BoundBlock(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,getSprite(mapImage,i,j), i, j);
+					BaseStatic BoundBlock = new BoundBlock(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,getSprite(mapImage,i,j));
 					mapInCreation.addBlock(BoundBlock);
 				}else if(currentPixel == pacman){
-					BaseStatic blankSpace = new BlankSpace(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
-					mapInCreation.addBlock(blankSpace);
-					BaseDynamic PacMan = new PacMan(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
+					BaseDynamic PacMan = new PacMan(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
 					mapInCreation.addEnemy(PacMan);
 					handler.setPacman((Game.PacMan.entities.Dynamics.PacMan) PacMan);
 				}else if(currentPixel == ghostC){
-					BaseStatic blankSpace = new BlankSpace(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
-					mapInCreation.addBlock(blankSpace);
-					BaseDynamic ghostspawn = new GhostSpawner(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
+					BaseDynamic ghostspawn = new GhostSpawner(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
 					mapInCreation.addEnemy(ghostspawn);
 				}else if(currentPixel == dotC){
-					BaseStatic dot = new Dot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
+					BaseStatic dot = new Dot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
 					mapInCreation.addBlock(dot);
 				}else if(currentPixel == bigDotC){
-					BaseStatic bigDot = new BigDot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
+					BaseStatic bigDot = new BigDot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
 					mapInCreation.addBlock(bigDot);
-				}else if(currentPixel == blank){
-					BaseStatic blankSpace = new BlankSpace(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,i,j);
-					mapInCreation.addBlock(blankSpace);
 				}
 			}
 
@@ -143,6 +135,10 @@ public class MapBuilder {
 		}
 
 
+	}
+	
+	public int getPixelMultiplier() {
+		return pixelMultiplier;
 	}
 
 

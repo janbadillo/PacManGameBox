@@ -37,6 +37,7 @@ public class Images {
     public static BufferedImage[] pacmanLeft;
     public static BufferedImage[] pacmanUp;
     public static BufferedImage[] pacmanDown;
+    public static BufferedImage[] pacmanDeath;
     
     public static BufferedImage[] redRight;
     public static BufferedImage[] redLeft;
@@ -60,6 +61,10 @@ public class Images {
     
     public static BufferedImage[] deadBlue;
     public static BufferedImage[] deadWhite;
+    public static BufferedImage deadEyesRight;
+    public static BufferedImage deadEyesLeft;
+    public static BufferedImage deadEyesUp;
+    public static BufferedImage deadEyesDown;
  
     public static BufferedImage[] bound;
     public static BufferedImage intro;
@@ -92,6 +97,7 @@ public class Images {
         pacmanLeft = new BufferedImage[2];
         pacmanUp = new BufferedImage[2];
         pacmanDown = new BufferedImage[2];
+        pacmanDeath = new BufferedImage[15];
         redRight = new BufferedImage[2];
         redLeft = new BufferedImage[2];
         redUp = new BufferedImage[2];
@@ -210,16 +216,30 @@ public class Images {
 
             pacmanRight[0] = pacmanSpriteSheet.crop(473,1,12,13);
             pacmanRight[1] = pacmanSpriteSheet.crop(489,1,13,13);
-
             pacmanLeft[0] = pacmanSpriteSheet.crop(474,17,12,13);
             pacmanLeft[1] = pacmanSpriteSheet.crop(489,1,13,13);
-
             pacmanUp[0] = pacmanSpriteSheet.crop(473,34,13,12);
             pacmanUp[1] = pacmanSpriteSheet.crop(489,1,13,13);
-
             pacmanDown[0] = pacmanSpriteSheet.crop(473,48,13,12);
             pacmanDown[1] = pacmanSpriteSheet.crop(489,1,13,13);
             
+            pacmanDeath[0] = pacmanSpriteSheet.crop(489,1,13,13);
+            pacmanDeath[1] = pacmanSpriteSheet.crop(504,1,14,13);
+            pacmanDeath[2] = pacmanSpriteSheet.crop(520,1,14,13);
+            pacmanDeath[3] = pacmanSpriteSheet.crop(536,1,14,13);
+            pacmanDeath[4] = pacmanSpriteSheet.crop(552,1,14,13);
+            pacmanDeath[5] = pacmanSpriteSheet.crop(568,1,14,13);
+            pacmanDeath[6] = pacmanSpriteSheet.crop(584,1,14,13);
+            pacmanDeath[7] = pacmanSpriteSheet.crop(600,1,14,13);
+            pacmanDeath[8] = pacmanSpriteSheet.crop(616,1,14,13);
+            pacmanDeath[9] = pacmanSpriteSheet.crop(632,1,14,13);
+            pacmanDeath[10] = pacmanSpriteSheet.crop(649,1,14,13);
+            pacmanDeath[11] = pacmanSpriteSheet.crop(664,2,14,13);
+            pacmanDeath[12] = pacmanSpriteSheet.crop(664,18,14,13);
+            pacmanDeath[13] = pacmanSpriteSheet.crop(664,2,14,13);
+            pacmanDeath[14] = pacmanSpriteSheet.crop(664,18,14,13);
+            
+              
             redRight[0] = pacmanSpriteSheet.crop(457,65,13,13);
             redRight[1] = pacmanSpriteSheet.crop(473,65,13,13);
             redLeft[0] = pacmanSpriteSheet.crop(489,65,13,13);
@@ -263,6 +283,12 @@ public class Images {
             deadWhite[1] = pacmanSpriteSheet.crop(633,65,13,13);
             deadWhite[2] = pacmanSpriteSheet.crop(585,65,13,13);
             deadWhite[3] = pacmanSpriteSheet.crop(601,65,13,13);
+            
+            deadEyesRight = pacmanSpriteSheet.crop(585,81,13,13);
+            deadEyesLeft = pacmanSpriteSheet.crop(601,81,13,13);
+            deadEyesUp = pacmanSpriteSheet.crop(617,81,13,13);
+            deadEyesDown = pacmanSpriteSheet.crop(633,81,13,13);
+            
 
             intro = ImageIO.read(getClass().getResourceAsStream("/UI/SpriteSheets/PacMan/intro.png"));
             start = ImageIO.read(getClass().getResourceAsStream("/UI/Backgrounds/startScreen.png"));
@@ -275,6 +301,8 @@ public class Images {
 
 
     }
+    
+    
 
     public static BufferedImage loadImage(String path) {
         try {

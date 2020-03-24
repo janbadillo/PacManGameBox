@@ -16,10 +16,8 @@ public class GhostSpawner extends BaseDynamic{
 	boolean spawn = false;
 	Ghost ghost;
 	
-    public GhostSpawner(int x, int y, int width, int height, Handler handler, int col, int row) {
+    public GhostSpawner(int x, int y, int width, int height, Handler handler) {
         super(x, y, width, height, handler, Images.blankSpace);
-        this.col = col;
-        this.row = row;
     }
 
     @Override
@@ -27,7 +25,7 @@ public class GhostSpawner extends BaseDynamic{
 
         if (handler.getKeyManager().keyJustPressed(KeyEvent.VK_C)){ // must implement randomness to this spawner
         	spawn = true;
-        	ghost = new Ghost(this.x,this.y,this.width,this.height,handler,this.col,this.row, ghostColor);
+        	ghost = new Ghost(this.x,this.y,this.width,this.height,handler, ghostColor);
         	colorCycle();
         }
 

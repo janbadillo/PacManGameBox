@@ -1,5 +1,6 @@
 package Game.PacMan.entities.Dynamics;
 
+import Game.PacMan.World.MapBuilder;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BoundBlock;
 import Main.Handler;
@@ -14,27 +15,27 @@ public class PacMan extends BaseDynamic{
 
     protected double speed = 2;
     public String facing = "Left", preTurn;
-    public boolean moving = true, turnFlag = false, turning = false, gamestart = true, dead = false;
-    public Animation leftAnim,rightAnim,upAnim,downAnim;
-    int turnCooldown = 20, turnDuration = 0;
-    int row, col;
-    BaseStatic towardsBlock;
+    public boolean moving = true, turnFlag = false, turning = false, gamestart = true, invinsible = false;
+    public Animation leftAnim,rightAnim,upAnim,downAnim,deathAnim;
+    int turnCooldown = 20, turnDuration = 0, posX, posY, towardsX, towardsY, deadCounter, invinsibleTime;
+    int pixelMultiplier = MapBuilder.pixelMultiplier;
 
 
-    public PacMan(int x, int y, int width, int height, Handler handler, int col, int row) {
+    public PacMan(int x, int y, int width, int height, Handler handler) {
         super(x, y, width, height, handler, Images.pacmanRight[0]);
         leftAnim = new Animation(128,Images.pacmanLeft);
         rightAnim = new Animation(128,Images.pacmanRight);
         upAnim = new Animation(128,Images.pacmanUp);
         downAnim = new Animation(128,Images.pacmanDown);
-        this.row = row;
-        this.col = col;
+        deathAnim = new Animation(128,Images.pacmanDeath);
+        posX = x;
+        posY = y;
     }
 
     @Override
     public void tick(){
     	if (gamestart) {
-    		setTowardsBlock(facing);
+    		setTowardsPosition(facing);
     		gamestart=false;
     	}
     	if (turnDuration > 0){
@@ -50,70 +51,91 @@ public class PacMan extends BaseDynamic{
         if (turnFlag){
             turnCooldown--;
         }
-        switch (facing){
-            case "Right":
-            	y = towardsBlock.y;
-            	if (this.x < towardsBlock.x) {
-	                x += speed;
-	                rightAnim.tick();
-            	} else {
-            		x = towardsBlock.x;
-            		setNewPosition();
-            		if (preTurn != null && canTurn()) {
-            			facing = preTurn;
-            		}
-            		setTowardsBlock(facing);
-            	}
-                break;
-            case "Left":
-            	y = towardsBlock.y;
-            	if (this.x > towardsBlock.x) {
-	                x-=speed;
-	                leftAnim.tick();
-            	} else {
-            		x = towardsBlock.x;
-            		setNewPosition();
-            		if (preTurn != null && canTurn()) {
-            			facing = preTurn;
-            		}
-            		setTowardsBlock(facing);
-            	}
-                break;
-            case "Up":
-            	x = towardsBlock.x;
-            	if (this.y > towardsBlock.y) {
-	                y-=speed;
-	                upAnim.tick();
-            	} else {
-            		y = towardsBlock.y;
-            		setNewPosition();
-            		if (preTurn != null && canTurn()) {
-            			facing = preTurn;
-            		}
-            		setTowardsBlock(facing);
-            	}
-                break;
-            case "Down":
-            	x = towardsBlock.x;
-            	if (this.y < towardsBlock.y) {
-	                y+=speed;
-	                downAnim.tick();
-            	} else {
-            		y = towardsBlock.y;
-            		setNewPosition();
-            		if (preTurn != null && canTurn()) {
-            			facing = preTurn;
-            		}
-            		setTowardsBlock(facing);
-            	}
-                break;
+        if (invinsibleTime<=0){
+            invinsible = false;
+        }
+        if (invinsible){
+            invinsibleTime--;
+        }
+        
+        if (ded) {
+        	if (deadCounter <= 0) {
+        		invinsible = true;
+        		invinsibleTime = 60*3;
+        		ded = false;
+        		deathAnim.reset();
+        	}else {
+        		deadCounter--;
+        	}
+        	if(!deathAnim.end) {
+        		deathAnim.tick();
+        	}
+        } else {
+	        switch (facing){
+	            case "Right":
+	            	y = towardsY;
+	            	if (this.x < towardsX) {
+		                x += speed;
+		                rightAnim.tick();
+	            	} else {
+	            		x = towardsX;
+	            		setNewPosition();
+	            		if (preTurn != null && canTurn()) {
+	            			facing = preTurn;
+	            		}
+	            		setTowardsPosition(facing);
+	            	}
+	                break;
+	            case "Left":
+	            	y = towardsY;
+	            	if (this.x > towardsX) {
+		                x-=speed;
+		                leftAnim.tick();
+	            	} else {
+	            		x = towardsX;
+	            		setNewPosition();
+	            		if (preTurn != null && canTurn()) {
+	            			facing = preTurn;
+	            		}
+	            		setTowardsPosition(facing);
+	            	}
+	                break;
+	            case "Up":
+	            	x = towardsX;
+	            	if (this.y > towardsY) {
+		                y-=speed;
+		                upAnim.tick();
+	            	} else {
+	            		y = towardsY;
+	            		setNewPosition();
+	            		if (preTurn != null && canTurn()) {
+	            			facing = preTurn;
+	            		}
+	            		setTowardsPosition(facing);
+	            	}
+	                break;
+	            case "Down":
+	            	x = towardsX;
+	            	if (this.y < towardsY) {
+		                y+=speed;
+		                downAnim.tick();
+	            	} else {
+	            		y = towardsY;
+	            		setNewPosition();
+	            		if (preTurn != null && canTurn()) {
+	            			facing = preTurn;
+	            		}
+	            		setTowardsPosition(facing);
+	            	}
+	                break;
+	        }
         }
 
         
         if ((handler.getKeyManager().keyJustPressed(KeyEvent.VK_RIGHT)  || handler.getKeyManager().keyJustPressed(KeyEvent.VK_D)) && !turnFlag){
         	if (facing == "Left") {
         		facing = "Right";
-        		setTowardsBlock(facing);
+        		setTowardsPosition(facing);
         	} else {
         	preTurn = "Right";
         	turnReset();
@@ -122,7 +144,7 @@ public class PacMan extends BaseDynamic{
         if ((handler.getKeyManager().keyJustPressed(KeyEvent.VK_LEFT)  || handler.getKeyManager().keyJustPressed(KeyEvent.VK_A)) && !turnFlag){	
         	if (facing == "Right") {
         		facing = "Left";
-        		setTowardsBlock(facing);
+        		setTowardsPosition(facing);
         	}else {
         	preTurn = "Left";
         	turnReset();
@@ -131,7 +153,7 @@ public class PacMan extends BaseDynamic{
         if ((handler.getKeyManager().keyJustPressed(KeyEvent.VK_UP)  || handler.getKeyManager().keyJustPressed(KeyEvent.VK_W)) && !turnFlag){	
         	if (facing == "Down") {
         		facing = "Up";
-        		setTowardsBlock(facing);
+        		setTowardsPosition(facing);
         	}else {
         	preTurn = "Up";
         	turnReset();
@@ -140,12 +162,20 @@ public class PacMan extends BaseDynamic{
         if ((handler.getKeyManager().keyJustPressed(KeyEvent.VK_DOWN)  || handler.getKeyManager().keyJustPressed(KeyEvent.VK_S)) && !turnFlag){	
         	if (facing == "Up") {
         		facing = "Down";
-        		setTowardsBlock(facing);
+        		setTowardsPosition(facing);
         	}else {
         	preTurn = "Down";
         	turnReset();
         	}
         }
+        if (handler.getKeyManager().keyJustPressed(KeyEvent.VK_P)){	
+        	die();
+        }
+    }
+    
+    public void die() {
+    	ded = true;
+    	deadCounter = 60*3;
     }
     
     public void turnReset() {
@@ -158,13 +188,13 @@ public class PacMan extends BaseDynamic{
     public boolean canTurn() {
     	for (BaseStatic bloku: handler.getMap().getBlocksOnMap()) {
     		if (bloku instanceof BoundBlock) {
-	    		if (preTurn == "Up" && bloku.getRow() == towardsBlock.getRow() - 1 && bloku.getCol() == towardsBlock.getCol()) {
+	    		if (preTurn == "Up" && bloku.y == towardsY - pixelMultiplier && bloku.x == towardsX) {
 	    			return false; // cannot turn Up
-	    		} else if (preTurn == "Down" && bloku.getRow() == towardsBlock.getRow() + 1 && bloku.getCol() == towardsBlock.getCol()) {
+	    		} else if (preTurn == "Down" && bloku.y == towardsY + pixelMultiplier && bloku.x == towardsX) {
 	    			return false; // cannot turn Down
-	    		} else if (preTurn == "Left" && bloku.getRow() == towardsBlock.getRow() && bloku.getCol() == towardsBlock.getCol() - 1) {
+	    		} else if (preTurn == "Left" && bloku.y == towardsY && bloku.x == towardsX - pixelMultiplier) {
 	    			return false; // cannot turn Left
-	    		} else if (preTurn == "Right" && bloku.getRow() == towardsBlock.getRow() && bloku.getCol() == towardsBlock.getCol() + 1) {
+	    		} else if (preTurn == "Right" && bloku.y == towardsY && bloku.x == towardsX + pixelMultiplier) {
 	    			return false; // cannot turn Right
 	    		} 
     		}
@@ -172,50 +202,44 @@ public class PacMan extends BaseDynamic{
     	return true;
     }
     
-    public void setTowardsBlock(String direction) {
+    public void setTowardsPosition(String direction) {
+    	int testX = posX;
+    	int testY = posY;
+    	boolean testpass = true;
+    	switch (direction){
+	        case "Right":
+	        	testX += pixelMultiplier;
+	            break;
+	        case "Left":
+	        	testX -= pixelMultiplier;
+	            break;
+	        case "Up":
+	        	testY -= pixelMultiplier;
+	            break;
+	        case "Down":
+	        	testY += pixelMultiplier;
+	            break;
+    	}
+    	 
     	for (BaseStatic bloku: handler.getMap().getBlocksOnMap()) {
-	    	switch (direction){
-		        case "Right":
-	        		if (bloku.getRow() == this.row && bloku.getCol() == this.col + 1 && !(bloku instanceof BoundBlock)) {
-	        			towardsBlock = bloku;
-	        		}
-		            break;
-		        case "Left":
-		        	if (bloku.getRow() == this.row && bloku.getCol() == this.col - 1 && !(bloku instanceof BoundBlock)) {
-	        			towardsBlock = bloku;
-	        		}
-		            break;
-		        case "Up":
-		        	if (bloku.getRow() == this.row - 1 && bloku.getCol() == this.col && !(bloku instanceof BoundBlock)) {
-	        			towardsBlock = bloku;
-	        		}
-		            break;
-		        case "Down":
-		        	if (bloku.getRow() == this.row + 1 && bloku.getCol() == this.col && !(bloku instanceof BoundBlock)) {
-	        			towardsBlock = bloku;
-	        		}
-		            break;
+    		if (bloku instanceof BoundBlock) {
+		    	if (testX == bloku.getX() && testY == bloku.getY()) {
+		    		testpass = false;
+		    	}
     		}
+    	}
+    	if (testpass) {
+    		towardsX = testX;
+    		towardsY = testY;
     	}
     }
     
     public void setNewPosition() {
-    	this.row = towardsBlock.getRow();
-    	this.col = towardsBlock.getCol();
+    	posX = towardsX;
+    	posY = towardsY;
     }
 
-    public int getRow() {
-        return row;
-    }
-    public int getCol() {
-        return col;
-    }
-    public void setRow(int row) {
-        this.row = row;
-    }
-    public void setCol(int col) {
-        this.col = col;
-    }
+
 
 
 }

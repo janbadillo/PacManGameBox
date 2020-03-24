@@ -3,10 +3,12 @@ package Game.PacMan.World;
 import Game.GameStates.PacManState;
 import Game.PacMan.entities.Dynamics.BaseDynamic;
 import Game.PacMan.entities.Dynamics.Ghost;
+import Game.PacMan.entities.Dynamics.GhostSpawner;
 import Game.PacMan.entities.Dynamics.PacMan;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BigDot;
 import Main.Handler;
+import Resources.Images;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ public class Map {
         this.rand = new Random();
         this.blocksOnMap = new ArrayList<>();
         this.enemiesOnMap = new ArrayList<>();
-        bottomBorder=handler.getHeight();
+        bottomBorder = handler.getHeight();
         this.mapBackground = this.rand.nextInt(6);
     }
 
@@ -65,24 +67,42 @@ public class Map {
         	}
         }
         for (BaseDynamic entity:enemiesOnMap) {
-            if (entity instanceof PacMan) {
-                switch (((PacMan) entity).facing){
-                    case "Right":
-                        g2.drawImage(((PacMan) entity).rightAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
-                        break;
-                    case "Left":
-                        g2.drawImage(((PacMan) entity).leftAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
-                        break;
-                    case "Up":
-                        g2.drawImage(((PacMan) entity).upAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
-                        break;
-                    case "Down":
-                        g2.drawImage(((PacMan) entity).downAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
-                        break;
-                }
+        	if (entity instanceof GhostSpawner) {
+        		g2.drawImage(entity.sprite, entity.x, entity.y, entity.width, entity.height, null);
+        		
+        	} else if (entity instanceof PacMan) {
+        		if(((PacMan) entity).invinsible == true) {
+        			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+        		}	  		
+            	if(entity.ded) {
+            		if (((PacMan) entity).deathAnim.end) {
+            			g2.drawImage(((PacMan) entity).deathAnim.getLastFrame(), entity.x, entity.y, entity.width, entity.height, null);
+            		}else {
+            			g2.drawImage(((PacMan) entity).deathAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
+            		}
+            	} else {
+	                switch (((PacMan) entity).facing){
+	                    case "Right":
+	                        g2.drawImage(((PacMan) entity).rightAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
+	                        break;
+	                    case "Left":
+	                        g2.drawImage(((PacMan) entity).leftAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
+	                        break;
+	                    case "Up":
+	                        g2.drawImage(((PacMan) entity).upAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
+	                        break;
+	                    case "Down":
+	                        g2.drawImage(((PacMan) entity).downAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
+	                        break;
+	                }
+            	}
+            	g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+            	
             } else if (entity instanceof Ghost) {
-            	if(((Ghost) entity).getVulnerability()) {
-            		if (((Ghost) entity).getVulnerableTime() <= 60*3) {
+            	if(entity.ded) {
+            		g2.drawImage(Images.deadEyesUp, entity.x, entity.y, entity.width, entity.height, null);
+            	} else if(((Ghost) entity).vulnerable) {
+            		if (((Ghost) entity).vulnerableTime <= 60*3) {
             			g2.drawImage(((Ghost) entity).deadWhiteAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
             		} else {
             			g2.drawImage(((Ghost) entity).deadBlueAnim.getCurrentFrame(), entity.x, entity.y, entity.width, entity.height, null);
@@ -106,6 +126,7 @@ public class Map {
 	                }
             	}
             }
+        	
             else {
                 g2.drawImage(entity.sprite, entity.x, entity.y, entity.width, entity.height, null);
             }
