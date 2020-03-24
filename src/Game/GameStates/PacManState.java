@@ -21,7 +21,7 @@ public class PacManState extends State {
 
     private UIManager uiManager;
     public String Mode = "Intro";
-    public int startCooldown = 60*4, vulnerableTime = 0; //seven seconds for the music to finish
+    public int startCooldown = 60*4; //seven seconds for the music to finish
     boolean spawn, vulnerable;
     Ghost newGhost;
 
@@ -44,7 +44,7 @@ public class PacManState extends State {
                 		if(((Ghost) entity).vulnerable) {
                 			if(entity.getBounds().intersects(handler.getPacman().getBounds())) {
                 				((Ghost) entity).die();
-                			}	
+                			}
                 		} else {
                 			if(entity.getBounds().intersects(handler.getPacman().getBounds())) {
                 				if(!entity.ded && !handler.getPacman().ded && !handler.getPacman().invinsible) {
@@ -52,7 +52,7 @@ public class PacManState extends State {
                 				}
                 			}
                 		}
-                	}
+                	}                               
                 	if (entity instanceof GhostSpawner) {
                 		if(((GhostSpawner) entity).getSpawn()) {
                 			spawn = true;
@@ -129,9 +129,6 @@ public class PacManState extends State {
         }
     }
     
-    public int getVulnerableTime() {
-    	return vulnerableTime;
-    }
 
     @Override
     public void refresh() {
