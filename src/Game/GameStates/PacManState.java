@@ -1,15 +1,15 @@
 package Game.GameStates;
 
-import Display.UI.UIManager;
 import Game.PacMan.World.MapBuilder;
 import Game.PacMan.entities.Dynamics.BaseDynamic;
 import Game.PacMan.entities.Dynamics.Ghost;
 import Game.PacMan.entities.Dynamics.GhostSpawner;
 import Game.PacMan.entities.Dynamics.PacMan;
+import Game.PacMan.entities.Dynamics.ScoreImage;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BigDot;
-import Game.PacMan.entities.Statics.BlankSpace;
 import Game.PacMan.entities.Statics.Dot;
+import Game.PacMan.entities.Statics.Fruit;
 import Main.Handler;
 import Resources.Images;
 
@@ -19,12 +19,11 @@ import java.util.ArrayList;
 
 public class PacManState extends State {
 
-    private UIManager uiManager;
     public String Mode = "Intro";
-    public int startCooldown = 60*4; //seven seconds for the music to finish
-    boolean spawn, vulnerable;
+    public int startCooldown = 60*4, killTimer; //seven seconds for the music to finish and a pause after pacman kills ghost
+    private boolean spawn, spawnScore, vulnerable;
     Ghost newGhost;
-
+    ScoreImage score;
     public PacManState(Handler handler){
         super(handler);
         handler.setMap(MapBuilder.createMap(Images.map1, handler));
@@ -36,6 +35,9 @@ public class PacManState extends State {
         if (Mode.equals("Stage")){
         	
             if (startCooldown<=0) {
+            	if (killTimer > 0) {
+            		killTimer--;
+            	}
                 for (BaseDynamic entity : handler.getMap().getEnemiesOnMap()) {
                 	if (entity instanceof Ghost) {
                 		if (vulnerable) {
@@ -43,55 +45,87 @@ public class PacManState extends State {
                 		}
                 		if(((Ghost) entity).vulnerable) {
                 			if(entity.getBounds().intersects(handler.getPacman().getBounds())) {
-                				((Ghost) entity).die();
+                				if (!entity.ded) {
+                					((Ghost) entity).die();
+                					handler.getMusicHandler().playEffect("pacman_eatghost.wav");
+                					handler.getScoreManager().addPacmanCurrentScore(500);
+                					score = new ScoreImage(entity.x, entity.y, handler.getPacman().width, handler.getPacman().height, handler, 1);
+                    				killTimer = 15;
+                    				spawnScore = true;
+                				}
                 			}
                 		} else {
-                			if(entity.getBounds().intersects(handler.getPacman().getBounds())) {
+                			if(entity.getBounds().intersects(handler.getPacman().getHitbox().getBounds())) {
                 				if(!entity.ded && !handler.getPacman().ded && !handler.getPacman().invinsible) {
                 					handler.getPacman().die();
+                					handler.getMusicHandler().playEffect("pacman_death.wav");
                 				}
                 			}
                 		}
                 	}                               
                 	if (entity instanceof GhostSpawner) {
-                		if(((GhostSpawner) entity).getSpawn()) {
-                			spawn = true;
-                			((GhostSpawner) entity).setSpawn(false);
-                			newGhost = ((GhostSpawner) entity).getNewGhost();
-                		}
+
+                			if (((GhostSpawner) entity).getSpawn()) {
+                    			spawn = true;
+                    			((GhostSpawner) entity).setSpawn(false);
+                    			newGhost = ((GhostSpawner) entity).getNewGhost();
+                    		}
+                		
                 	}
                 	if (handler.getPacman().ded && entity instanceof PacMan) {
                 		handler.getPacman().tick();
-                	} else if (!handler.getPacman().ded){
+                	} else if (!handler.getPacman().ded && killTimer <= 0){
                 		entity.tick();
                 	}
                 }
                 vulnerable = false;
-                
+
                 if (spawn) {
                 	handler.getMap().getEnemiesOnMap().add(newGhost);
                 	spawn = false;
+                }
+                if (spawnScore) {
+                	handler.getMap().getEnemiesOnMap().add(score);
+                	spawnScore = false;
                 }
                 ArrayList<BaseStatic> toREmove = new ArrayList<>();
                 for (BaseStatic blocks: handler.getMap().getBlocksOnMap()){
                     if (blocks instanceof Dot){
                         if (blocks.getBounds().intersects(handler.getPacman().getBounds())){
-                            handler.getMusicHandler().playEffect("pacman_chomp.wav");
+                            handler.getMusicHandler().playEffect("pacman_newchomp.wav");
+                        	handler.getScoreManager().addPacmanCurrentScore(10);
                             toREmove.add(blocks);
-                            handler.getScoreManager().addPacmanCurrentScore(10);
                         }
                     }else if (blocks instanceof BigDot){
                         if (blocks.getBounds().intersects(handler.getPacman().getBounds())){
                         	vulnerable = true;
-                            handler.getMusicHandler().playEffect("pacman_chomp.wav");
+                            handler.getMusicHandler().playEffect("pacman_newchomp.wav");
                             toREmove.add(blocks);
                             handler.getScoreManager().addPacmanCurrentScore(100);
-
                         }
-                    } 
+                    } else if (blocks instanceof Fruit){
+                    	if (blocks.getBounds().intersects(handler.getPacman().getBounds())){
+                            handler.getMusicHandler().playEffect("pacman_eatfruit.wav");
+                        	handler.getScoreManager().addPacmanCurrentScore(120);
+                            toREmove.add(blocks);
+        					ScoreImage score = new ScoreImage(blocks.x, blocks.y, blocks.width, blocks.height, handler, 0);
+        					handler.getMap().getEnemiesOnMap().add(score);
+                        }
+                    }
                 }
                 for (BaseStatic removing: toREmove){
                     handler.getMap().getBlocksOnMap().remove(removing);
+                }
+                ArrayList<BaseDynamic> toRemove = new ArrayList<>();
+                for (BaseDynamic entity: handler.getMap().getEnemiesOnMap()){
+                	if (entity instanceof ScoreImage) {
+	            		if (entity.ded) {
+	            			toRemove.add(entity);
+	            		}
+            		}
+                }
+                for (BaseDynamic removing: toRemove){
+                    handler.getMap().getEnemiesOnMap().remove(removing);
                 }
             }else{
                 startCooldown--;

@@ -5,6 +5,7 @@ import Game.PacMan.entities.Dynamics.BaseDynamic;
 import Game.PacMan.entities.Dynamics.Ghost;
 import Game.PacMan.entities.Dynamics.GhostSpawner;
 import Game.PacMan.entities.Dynamics.PacMan;
+import Game.PacMan.entities.Dynamics.ScoreImage;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BigDot;
 import Main.Handler;
@@ -12,7 +13,6 @@ import Resources.Images;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Map {
 
@@ -21,16 +21,12 @@ public class Map {
     Handler handler;
     PacManState gamestate;
     private double bottomBorder;
-    private Random rand;
-    private int mapBackground;
 
     public Map(Handler handler) {
         this.handler=handler;
-        this.rand = new Random();
         this.blocksOnMap = new ArrayList<>();
         this.enemiesOnMap = new ArrayList<>();
-        bottomBorder = handler.getHeight();
-        this.mapBackground = this.rand.nextInt(6);
+        bottomBorder = handler.getHeight(); 
     }
 
     public void addBlock(BaseStatic block){
@@ -38,9 +34,7 @@ public class Map {
     }
 
     public void addEnemy(BaseDynamic entity){
-
         enemiesOnMap.add(entity);
-
     }
     
     float opacity = 1;
@@ -125,6 +119,13 @@ public class Map {
 		                    break;
 	                }
             	}
+            } else if(entity instanceof ScoreImage) {
+            	if (((ScoreImage) entity).type == 0) {
+            		g2.drawImage(Images.scoreSprite[0], entity.x, entity.y, entity.width, entity.height, null);
+            	} else if (((ScoreImage) entity).type == 1) {
+            		g2.drawImage(Images.scoreSprite[1], entity.x, entity.y, entity.width, entity.height, null);
+            	}
+            	 
             }
         	
             else {

@@ -1,20 +1,15 @@
 package Game.PacMan.entities.Dynamics;
 
-import Game.PacMan.entities.Statics.BaseStatic;
-import Game.PacMan.entities.Statics.BoundBlock;
 import Main.Handler;
-import Resources.Animation;
 import Resources.Images;
-
-import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 public class GhostSpawner extends BaseDynamic{
 
-	int col, row, ghostColor;
-	boolean spawn = false;
-	Ghost ghost;
+	public int col, row, ghostColor;
+	private int spawnCooldown = 30, counter = 4;
+	private boolean spawn = false;
+	public Ghost ghost;
 	
     public GhostSpawner(int x, int y, int width, int height, Handler handler) {
         super(x, y, width, height, handler, Images.blankSpace);
@@ -22,13 +17,25 @@ public class GhostSpawner extends BaseDynamic{
 
     @Override
     public void tick(){
+    	if(spawnCooldown > 0) {
+    		spawnCooldown--;
+    	}
+    	if (spawnCooldown <= 0 && counter > 0) {
+    		spawnGhost();
+    		spawnCooldown = 30;
+    		counter--;
+    	}
 
         if (handler.getKeyManager().keyJustPressed(KeyEvent.VK_C)){ // must implement randomness to this spawner
-        	spawn = true;
-        	ghost = new Ghost(this.x,this.y,this.width,this.height,handler, ghostColor);
-        	colorCycle();
+        	spawnGhost();
         }
 
+    }
+    
+    public void spawnGhost() {
+    	spawn = true;
+    	ghost = new Ghost(this.x,this.y,this.width,this.height,handler, ghostColor);
+    	colorCycle();
     }
     
     public void colorCycle() {

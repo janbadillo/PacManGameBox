@@ -8,18 +8,16 @@ import Main.Handler;
 import Resources.Animation;
 import Resources.Images;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Ghost extends BaseDynamic{
 
     protected double speed = 2;
-    public int facing = 3, chanceToTurn, vulnerableTime;//0 is Up, 1 is Right, 2 is Down, 3 is Left
+    public int facing = 3, chanceToTurn, vulnerableTime, ghostColor;//0 is Up, 1 is Right, 2 is Down, 3 is Left
     public boolean gamestart = true, vulnerable = false, dead = false;
     public Animation leftAnim,rightAnim,upAnim,downAnim,deadBlueAnim,deadWhiteAnim;
-    int turnCooldown = 20, turnDuration = 0, deadCounter;
+    private int mainSpeed;
     int posX, posY, towardsX, towardsY, spawnX, spawnY;
     int pixelMultiplier = MapBuilder.pixelMultiplier;
     ArrayList<Integer> availableDirections = new ArrayList<>();
@@ -29,25 +27,28 @@ public class Ghost extends BaseDynamic{
 
     public Ghost(int x, int y, int width, int height, Handler handler, int color) {
         super(x, y, width, height, handler, Images.ghost);
-        // for color: 0 is red, 1 is cyan, 2 is pink, 3 is tan
         deadBlueAnim = new Animation(128,Images.deadBlue);
         deadWhiteAnim = new Animation(128,Images.deadWhite);
-        if (color == 0) {
+        if (color == 0) { // red
+        	mainSpeed = 4;
 	        leftAnim = new Animation(128,Images.redLeft);
 	        rightAnim = new Animation(128,Images.redRight);
 	        upAnim = new Animation(128,Images.redUp);
 	        downAnim = new Animation(128,Images.redDown);
-        } else if (color == 1) {
+        } else if (color == 1) { // cyan
+        	mainSpeed = 3;
         	leftAnim = new Animation(128,Images.cyanLeft);
 	        rightAnim = new Animation(128,Images.cyanRight);
 	        upAnim = new Animation(128,Images.cyanUp);
 	        downAnim = new Animation(128,Images.cyanDown);
-        } else if (color == 2) {
+        } else if (color == 2) { // pink
+        	mainSpeed = 2;
         	leftAnim = new Animation(128,Images.pinkLeft);
 	        rightAnim = new Animation(128,Images.pinkRight);
 	        upAnim = new Animation(128,Images.pinkUp);
 	        downAnim = new Animation(128,Images.pinkDown);
-        } else if (color == 3) {
+        } else if (color == 3) { // tan
+        	mainSpeed = 1;
         	leftAnim = new Animation(128,Images.tanLeft);
 	        rightAnim = new Animation(128,Images.tanRight);
 	        upAnim = new Animation(128,Images.tanUp);
@@ -79,19 +80,19 @@ public class Ghost extends BaseDynamic{
     		}
     			
     	}else {
-    		speed = 2;
+    		speed = mainSpeed;
     	}
     	if(ded) {
             if ((spawnY + 8 < y || y < spawnY - 8) || (spawnX + 8 < x || x < spawnX - 8)) { // if not centered
                 if (y > spawnY) {
-                    y -= speed;
+                    y -= 2;
                 } else {
-                    y += speed;
+                    y += 2;
                 }
                 if (x > spawnX) {
-                    x -= speed;
+                    x -= 2;
                 } else {
-                    x += speed;
+                    x += 2;
                 }
             } else {
             	y = spawnY;
@@ -195,12 +196,12 @@ public class Ghost extends BaseDynamic{
 
 	  public void makeVulnerable() {
 		vulnerable = true;
-		vulnerableTime = 60*7;
+		vulnerableTime = 60*10;
 	  }
 	  
 	  public void die() {
 		    ded = true;
-		  }
+	  }
     
     
     public void setAvailableTurns() {
@@ -271,6 +272,14 @@ public class Ghost extends BaseDynamic{
     public void setNewPosition() {
     	posX = towardsX;
     	posY = towardsY;
+    }
+    
+    public void colorCycle() {
+    	if (ghostColor == 3) {
+    		ghostColor = 0;
+    	}else {
+    		ghostColor += 1;
+    	}
     }
 
 }

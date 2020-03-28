@@ -1,29 +1,32 @@
 package Game.PacMan.World;
 
 import Game.PacMan.entities.Dynamics.BaseDynamic;
-import Game.PacMan.entities.Dynamics.Ghost;
 import Game.PacMan.entities.Dynamics.GhostSpawner;
 import Game.PacMan.entities.Dynamics.PacMan;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BigDot;
-import Game.PacMan.entities.Statics.BlankSpace;
 import Game.PacMan.entities.Statics.BoundBlock;
 import Game.PacMan.entities.Statics.Dot;
+import Game.PacMan.entities.Statics.Fruit;
+import Game.PacMan.entities.Statics.SpawnGate;
 import Main.Handler;
 import Resources.Images;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 public class MapBuilder {
 
-	public static int pixelMultiplier = 18;//change this for size of blocks
+	public static int pixelMultiplier = 18;  //change this for size of blocks
 	public static int boundBlock = new Color(0,0,0).getRGB();
 	public static int pacman = new Color(255, 255,0).getRGB();
 	public static int ghostC = new Color(25, 255,0).getRGB();
 	public static int dotC = new Color(255, 10, 0).getRGB();
 	public static int bigDotC = new Color(167, 0, 150).getRGB();
-
+	public static int spawnGate = new Color(0, 0, 255).getRGB();
+	static Random random = new Random();
+	public static int fruitType = 0;
 	public static Map createMap(BufferedImage mapImage, Handler handler){
 		Map mapInCreation = new Map(handler);
 		for (int i = 0; i < mapImage.getWidth(); i++) {
@@ -31,6 +34,7 @@ public class MapBuilder {
 				int currentPixel = mapImage.getRGB(i, j);
 				int xPos = i*pixelMultiplier;
 				int yPos = j*pixelMultiplier;
+
 				
 				if(currentPixel == boundBlock){
 					BaseStatic BoundBlock = new BoundBlock(xPos,yPos,pixelMultiplier,pixelMultiplier,handler,getSprite(mapImage,i,j));
@@ -42,8 +46,23 @@ public class MapBuilder {
 				}else if(currentPixel == ghostC){
 					BaseDynamic ghostspawn = new GhostSpawner(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
 					mapInCreation.addEnemy(ghostspawn);
-				}else if(currentPixel == dotC){
-					BaseStatic dot = new Dot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
+				}else if(currentPixel == spawnGate){
+					BaseStatic spwngate = new SpawnGate(xPos,yPos,pixelMultiplier,pixelMultiplier,handler, Images.spawngate);
+					mapInCreation.addBlock(spwngate);
+				}
+				else if(currentPixel == dotC){
+					int fruitchance = random.nextInt(30);
+					BaseStatic dot;
+					if (fruitchance == 0) {
+						dot = new Fruit(xPos,yPos,pixelMultiplier,pixelMultiplier,handler, fruitType);
+						if (fruitType >= 6) {
+							fruitType = 0;
+						} else {
+							fruitType ++;
+						}
+					}else {
+						dot = new Dot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);
+					}
 					mapInCreation.addBlock(dot);
 				}else if(currentPixel == bigDotC){
 					BaseStatic bigDot = new BigDot(xPos,yPos,pixelMultiplier,pixelMultiplier,handler);

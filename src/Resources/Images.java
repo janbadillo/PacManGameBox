@@ -65,11 +65,20 @@ public class Images {
     public static BufferedImage deadEyesLeft;
     public static BufferedImage deadEyesUp;
     public static BufferedImage deadEyesDown;
+    
+    public static BufferedImage[] fruits;
+    public static BufferedImage cherry;
+    public static BufferedImage strawberry;
+    public static BufferedImage melon;
+    public static BufferedImage key;
+    public static BufferedImage flan;
  
     public static BufferedImage[] bound;
+    public static BufferedImage spawngate;
+    
     public static BufferedImage intro;
     public static BufferedImage start;
-
+    public static BufferedImage[] scoreSprite;
 
 
     public static BufferedImage galagaImageSheet;
@@ -116,6 +125,9 @@ public class Images {
         tanDown = new BufferedImage[2];
         deadBlue = new BufferedImage[2];
         deadWhite = new BufferedImage[4];
+        
+        fruits = new BufferedImage[7];
+        scoreSprite = new BufferedImage[2];
         
         bound = new BufferedImage[16];
 
@@ -289,7 +301,20 @@ public class Images {
             deadEyesUp = pacmanSpriteSheet.crop(617,81,13,13);
             deadEyesDown = pacmanSpriteSheet.crop(633,81,13,13);
             
-
+            fruits[0] = pacmanSpriteSheet.crop(488,48,16,16); // cherry
+            fruits[1] = pacmanSpriteSheet.crop(504,49,15,15); // strawberry
+            fruits[2] = pacmanSpriteSheet.crop(520,48,16,16); // orange
+            fruits[3] = pacmanSpriteSheet.crop(536,48,16,16); // apple
+            fruits[4] = pacmanSpriteSheet.crop(553,48,15,16); // melon
+            fruits[5] = pacmanSpriteSheet.crop(600,49,15,15); // key
+            fruits[6] = pacmanSpriteSheet.crop(584,48,16,16); // flan
+            
+            scoreSprite[0] = pacmanSpriteSheet.crop(514,164,14,7); // 120 score
+            scoreSprite[1] = pacmanSpriteSheet.crop(518,196,15,7); // 500 score
+            
+            spawngate = pacmanSpriteSheet.crop(566,177,16,16);
+            
+            
             intro = ImageIO.read(getClass().getResourceAsStream("/UI/SpriteSheets/PacMan/intro.png"));
             start = ImageIO.read(getClass().getResourceAsStream("/UI/Backgrounds/startScreen.png"));
 

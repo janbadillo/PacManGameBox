@@ -3,22 +3,24 @@ package Game.PacMan.entities.Dynamics;
 import Game.PacMan.World.MapBuilder;
 import Game.PacMan.entities.Statics.BaseStatic;
 import Game.PacMan.entities.Statics.BoundBlock;
+import Game.PacMan.entities.Statics.SpawnGate;
 import Main.Handler;
 import Resources.Animation;
 import Resources.Images;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 public class PacMan extends BaseDynamic{
 
     protected double speed = 2;
     public String facing = "Left", preTurn;
-    public boolean moving = true, turnFlag = false, turning = false, gamestart = true, invinsible = false;
+    private boolean turnFlag = false, turning = false, gamestart = true;
     public Animation leftAnim,rightAnim,upAnim,downAnim,deathAnim;
     int turnCooldown = 20, turnDuration = 0, posX, posY, towardsX, towardsY, deadCounter, invinsibleTime;
     int pixelMultiplier = MapBuilder.pixelMultiplier;
+    public boolean invinsible = false;
+    Rectangle hitbox;
 
 
     public PacMan(int x, int y, int width, int height, Handler handler) {
@@ -27,13 +29,14 @@ public class PacMan extends BaseDynamic{
         rightAnim = new Animation(128,Images.pacmanRight);
         upAnim = new Animation(128,Images.pacmanUp);
         downAnim = new Animation(128,Images.pacmanDown);
-        deathAnim = new Animation(128,Images.pacmanDeath);
+        deathAnim = new Animation(100,Images.pacmanDeath);
         posX = x;
         posY = y;
     }
 
     @Override
     public void tick(){
+    	hitbox = new Rectangle((int)(x + 1.0/4.0*width), (int)(y + 1.0/4.0*height), (int)(1.0/2.0*width),(int)( 1.0/2.0*height));
     	if (gamestart) {
     		setTowardsPosition(facing);
     		gamestart=false;
@@ -57,7 +60,7 @@ public class PacMan extends BaseDynamic{
         if (invinsible){
             invinsibleTime--;
         }
-        
+
         if (ded) {
         	if (deadCounter <= 0) {
         		invinsible = true;
@@ -78,7 +81,7 @@ public class PacMan extends BaseDynamic{
 		                x += speed;
 		                rightAnim.tick();
 	            	} else {
-	            		x = towardsX;
+	            		//x = towardsX;
 	            		setNewPosition();
 	            		if (preTurn != null && canTurn()) {
 	            			facing = preTurn;
@@ -92,7 +95,7 @@ public class PacMan extends BaseDynamic{
 		                x-=speed;
 		                leftAnim.tick();
 	            	} else {
-	            		x = towardsX;
+	            		//x = towardsX;
 	            		setNewPosition();
 	            		if (preTurn != null && canTurn()) {
 	            			facing = preTurn;
@@ -106,7 +109,7 @@ public class PacMan extends BaseDynamic{
 		                y-=speed;
 		                upAnim.tick();
 	            	} else {
-	            		y = towardsY;
+	            		//y = towardsY;
 	            		setNewPosition();
 	            		if (preTurn != null && canTurn()) {
 	            			facing = preTurn;
@@ -120,7 +123,7 @@ public class PacMan extends BaseDynamic{
 		                y+=speed;
 		                downAnim.tick();
 	            	} else {
-	            		y = towardsY;
+	            		//y = towardsY;
 	            		setNewPosition();
 	            		if (preTurn != null && canTurn()) {
 	            			facing = preTurn;
@@ -134,6 +137,7 @@ public class PacMan extends BaseDynamic{
         
         if ((handler.getKeyManager().keyJustPressed(KeyEvent.VK_RIGHT)  || handler.getKeyManager().keyJustPressed(KeyEvent.VK_D)) && !turnFlag){
         	if (facing == "Left") {
+        		preTurn = null;
         		facing = "Right";
         		setTowardsPosition(facing);
         	} else {
@@ -143,6 +147,7 @@ public class PacMan extends BaseDynamic{
         }
         if ((handler.getKeyManager().keyJustPressed(KeyEvent.VK_LEFT)  || handler.getKeyManager().keyJustPressed(KeyEvent.VK_A)) && !turnFlag){	
         	if (facing == "Right") {
+        		preTurn = null;
         		facing = "Left";
         		setTowardsPosition(facing);
         	}else {
@@ -152,6 +157,7 @@ public class PacMan extends BaseDynamic{
         }
         if ((handler.getKeyManager().keyJustPressed(KeyEvent.VK_UP)  || handler.getKeyManager().keyJustPressed(KeyEvent.VK_W)) && !turnFlag){	
         	if (facing == "Down") {
+        		preTurn = null;
         		facing = "Up";
         		setTowardsPosition(facing);
         	}else {
@@ -161,6 +167,7 @@ public class PacMan extends BaseDynamic{
         }
         if ((handler.getKeyManager().keyJustPressed(KeyEvent.VK_DOWN)  || handler.getKeyManager().keyJustPressed(KeyEvent.VK_S)) && !turnFlag){	
         	if (facing == "Up") {
+        		preTurn = null;
         		facing = "Down";
         		setTowardsPosition(facing);
         	}else {
@@ -173,21 +180,26 @@ public class PacMan extends BaseDynamic{
         }
     }
     
+    public Rectangle getHitbox() {
+    	return hitbox;
+    }
+    
     public void die() {
     	ded = true;
     	deadCounter = 60*3;
     }
     
-    public void turnReset() {
+    private void turnReset() {
     	turning = true;
     	turnDuration = 20;
     	turnFlag = true;
         turnCooldown = 5;
     }
     
-    public boolean canTurn() {
+    private boolean canTurn() {
     	for (BaseStatic bloku: handler.getMap().getBlocksOnMap()) {
-    		if (bloku instanceof BoundBlock) {
+    		if (bloku instanceof BoundBlock || bloku instanceof SpawnGate
+    				) {
 	    		if (preTurn == "Up" && bloku.y == towardsY - pixelMultiplier && bloku.x == towardsX) {
 	    			return false; // cannot turn Up
 	    		} else if (preTurn == "Down" && bloku.y == towardsY + pixelMultiplier && bloku.x == towardsX) {
@@ -196,13 +208,13 @@ public class PacMan extends BaseDynamic{
 	    			return false; // cannot turn Left
 	    		} else if (preTurn == "Right" && bloku.y == towardsY && bloku.x == towardsX + pixelMultiplier) {
 	    			return false; // cannot turn Right
-	    		} 
+	    		}
     		}
     	}
     	return true;
     }
     
-    public void setTowardsPosition(String direction) {
+    private void setTowardsPosition(String direction) {
     	int testX = posX;
     	int testY = posY;
     	boolean testpass = true;
@@ -226,6 +238,10 @@ public class PacMan extends BaseDynamic{
 		    	if (testX == bloku.getX() && testY == bloku.getY()) {
 		    		testpass = false;
 		    	}
+    		} else if(bloku instanceof SpawnGate) {
+		    	if (testX == bloku.getX() && testY == bloku.getY()) {
+		    		testpass = false;
+		    	}
     		}
     	}
     	if (testpass) {
@@ -234,7 +250,7 @@ public class PacMan extends BaseDynamic{
     	}
     }
     
-    public void setNewPosition() {
+    private void setNewPosition() {
     	posX = towardsX;
     	posY = towardsY;
     }
