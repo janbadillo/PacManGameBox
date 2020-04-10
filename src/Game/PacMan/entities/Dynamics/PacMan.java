@@ -17,7 +17,7 @@ public class PacMan extends BaseDynamic{
     public String facing = "Left", preTurn;
     private boolean turnFlag = false, turning = false, gamestart = true;
     public Animation leftAnim,rightAnim,upAnim,downAnim,deathAnim;
-    int turnCooldown = 20, turnDuration = 0, posX, posY, towardsX, towardsY, deadCounter, invinsibleTime;
+    int turnCooldown = 20, turnDuration = 0, posX, posY, towardsX, towardsY, deadCounter, invinsibleTime, lives = 3;
     int pixelMultiplier = MapBuilder.pixelMultiplier;
     public boolean invinsible = false;
     Rectangle hitbox;
@@ -33,6 +33,14 @@ public class PacMan extends BaseDynamic{
         posX = x;
         posY = y;
     }
+    
+    /* 
+     * The whole movement system was changed for one which uses what I call a "towards block" (towardsX and towardsY).
+     * PacMan moves to this towards block and when he gets there it generates a new one and so on.
+     * 
+     * We also added a preTurn, which saves a direction for a small ammount of time so you don't have to be precise when moving to a new direction.
+     * You can press a direction shortly before turning and PacMan will still turn.
+     */
 
     @Override
     public void tick(){
@@ -175,11 +183,18 @@ public class PacMan extends BaseDynamic{
         	turnReset();
         	}
         }
-        if (handler.getKeyManager().keyJustPressed(KeyEvent.VK_P)){	
-        	die();
+        if (handler.getKeyManager().keyJustPressed(KeyEvent.VK_P)){
+        	if(deadCounter <= 0)
+        		die();
         }
+        if (handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)){	
+        	lives++;
+        }
+
     }
     
+    // Ghosts must collide with hitbox for PacMan to die
+    // The purpose is so PacMan does not die so easily.
     public Rectangle getHitbox() {
     	return hitbox;
     }
@@ -187,6 +202,15 @@ public class PacMan extends BaseDynamic{
     public void die() {
     	ded = true;
     	deadCounter = 60*3;
+    	lives--;
+    	handler.getMusicHandler().playEffect("pacman_death.wav");
+    }
+    
+    public int getLives() {
+    	return lives;
+    }
+    public void setLives(int a) {
+    	lives = a;
     }
     
     private void turnReset() {
@@ -196,6 +220,7 @@ public class PacMan extends BaseDynamic{
         turnCooldown = 5;
     }
     
+    // This method verifies if the direction which PacMan wants to turn to is available. If not, he will just keep moving forward.
     private boolean canTurn() {
     	for (BaseStatic bloku: handler.getMap().getBlocksOnMap()) {
     		if (bloku instanceof BoundBlock || bloku instanceof SpawnGate
@@ -214,6 +239,7 @@ public class PacMan extends BaseDynamic{
     	return true;
     }
     
+    //This method uses the pixelMultiplier to set a new towards position if the position is not occupied by a BoundBlock or the SpawnGate that we added.
     private void setTowardsPosition(String direction) {
     	int testX = posX;
     	int testY = posY;

@@ -18,7 +18,7 @@ import java.util.Random;
 
 public class MapBuilder {
 
-	public static int pixelMultiplier = 18;  //change this for size of blocks
+	public static int pixelMultiplier = 25;  //change this for size of blocks  (original is 18)
 	public static int boundBlock = new Color(0,0,0).getRGB();
 	public static int pacman = new Color(255, 255,0).getRGB();
 	public static int ghostC = new Color(25, 255,0).getRGB();
@@ -156,7 +156,7 @@ public class MapBuilder {
 
 	}
 	
-	public int getPixelMultiplier() {
+	public static int getPixelMultiplier() {
 		return pixelMultiplier;
 	}
 

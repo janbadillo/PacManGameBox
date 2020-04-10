@@ -14,8 +14,8 @@ import java.util.Random;
 public class Ghost extends BaseDynamic{
 
     protected double speed = 2;
-    public int facing = 3, chanceToTurn, vulnerableTime, ghostColor;//0 is Up, 1 is Right, 2 is Down, 3 is Left
-    public boolean gamestart = true, vulnerable = false, dead = false;
+    public int facing = 3, chanceToTurn, vulnerableTime, ghostColor; //0 is Up, 1 is Right, 2 is Down, 3 is Left
+    public boolean gamestart = true, vulnerable = false, dead = false, toRespawn = false;
     public Animation leftAnim,rightAnim,upAnim,downAnim,deadBlueAnim,deadWhiteAnim;
     private int mainSpeed;
     int posX, posY, towardsX, towardsY, spawnX, spawnY;
@@ -101,7 +101,7 @@ public class Ghost extends BaseDynamic{
             	posX = x;
             	setTowardsPosition(facing);
             	vulnerable = false;
-            	ded = false;
+            	toRespawn = true;
             }
 
     	}else {
@@ -202,6 +202,13 @@ public class Ghost extends BaseDynamic{
 	  public void die() {
 		    ded = true;
 	  }
+	  public void revive() {
+		    ded = false;
+	  }
+	  public void setToRespawn(boolean a) {
+		    toRespawn = a;
+	  }
+	  
     
     
     public void setAvailableTurns() {

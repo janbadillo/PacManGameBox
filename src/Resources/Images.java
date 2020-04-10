@@ -28,6 +28,7 @@ public class Images {
     public static BufferedImage[] galagaEnemyBee;
 
     public static BufferedImage map1;
+    public static BufferedImage testMap;
     public static BufferedImage ghost;
     public static BufferedImage pacmanLogo;
     public static BufferedImage blankSpace;
@@ -200,6 +201,7 @@ public class Images {
             pacmanSpriteSheet = new SpriteSheet(pacmanImageSheet);
             logoSpriteSheet = new SpriteSheet(logoImageSheet);
             map1 = ImageIO.read(getClass().getResourceAsStream("/UI/Backgrounds/PacManMaps/map1.png"));
+            testMap = ImageIO.read(getClass().getResourceAsStream("/UI/Backgrounds/PacManMaps/testMap.png"));
             ghost = pacmanSpriteSheet.crop(456,64,16,16);
             
             pacmanLogo = logoSpriteSheet.crop(50,348,2538,670);

@@ -57,7 +57,7 @@ public class Animation {
     }
 
     public void reset(){
-        index =0;
+        index = 0;
         end = false;
     }
 }

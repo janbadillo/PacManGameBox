@@ -21,6 +21,7 @@ public class Map {
     Handler handler;
     PacManState gamestate;
     private double bottomBorder;
+    private int pixelmultiplier = MapBuilder.getPixelMultiplier();
 
     public Map(Handler handler) {
         this.handler=handler;
@@ -65,6 +66,11 @@ public class Map {
         		g2.drawImage(entity.sprite, entity.x, entity.y, entity.width, entity.height, null);
         		
         	} else if (entity instanceof PacMan) {
+        		int posX = Images.map1.getWidth()*pixelmultiplier + pixelmultiplier*2;
+        		for(int i = 0; i < handler.getPacman().getLives(); i++) {
+        			g2.drawImage(Images.pacmanRight[0], posX, Images.map1.getHeight()*pixelmultiplier - pixelmultiplier*3, pixelmultiplier*2, pixelmultiplier*2 , null);
+        			posX += pixelmultiplier*3;
+        		}
         		if(((PacMan) entity).invinsible == true) {
         			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
         		}	  		
